@@ -21,14 +21,32 @@ function draw() {
   let x = (windowWidth - vWidth) / 2;
   let y = (windowHeight - vHeight) / 2;
 
-  // 在 graphics 繪圖層上畫東西
-  pg.clear(); // 確保背景透明
-  pg.fill(255, 255, 0);
-  pg.noStroke();
-  pg.ellipse(pg.width / 2, pg.height / 2, 50, 50); // 在中間畫個黃色圓點
-  pg.fill(0);
-  pg.textAlign(CENTER, CENTER);
-  pg.text("Graphics Layer", pg.width / 2, pg.height / 2 + 40);
+  pg.clear(); 
+  
+  capture.loadPixels();
+  // 確保攝影機像素資料已載入
+  if (capture.pixels.length > 0) {
+    pg.textAlign(CENTER, CENTER);
+    pg.textSize(8);
+    pg.fill(255); // 設定文字顏色為白色，方便在視訊上閱讀
+
+    for (let py = 0; py < pg.height; py += 20) {
+      for (let px = 0; px < pg.width; px += 20) {
+        // 將 pg 的座標對應回攝影機原始解析度的座標
+        let camX = floor(map(px, 0, pg.width, 0, capture.width));
+        let camY = floor(map(py, 0, pg.height, 0, capture.height));
+        let index = (camX + camY * capture.width) * 4;
+
+        let r = capture.pixels[index];
+        let g = capture.pixels[index + 1];
+        let b = capture.pixels[index + 2];
+        let avg = floor((r + g + b) / 3);
+
+        // 在該單位位置顯示計算後的數值
+        pg.text(avg, px + 10, py + 10);
+      }
+    }
+  }
 
   push();
   // 將座標原點移至影像顯示區域的右側，並水平翻轉 (-1)
