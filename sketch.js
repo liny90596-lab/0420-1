@@ -18,7 +18,13 @@ function draw() {
   let x = (windowWidth - vWidth) / 2;
   let y = (windowHeight - vHeight) / 2;
 
-  image(capture, x, y, vWidth, vHeight);
+  push();
+  // 將座標原點移至影像顯示區域的右側，並水平翻轉 (-1)
+  translate(x + vWidth, y);
+  scale(-1, 1);
+  // 因為座標系已經翻轉，我們從 (0, 0) 開始繪製影像即可
+  image(capture, 0, 0, vWidth, vHeight);
+  pop();
 }
 
 function windowResized() {
