@@ -32,8 +32,8 @@ function draw() {
 
     for (let py = 0; py < pg.height; py += 20) {
       for (let px = 0; px < pg.width; px += 20) {
-        // 將 pg 的座標對應回攝影機原始解析度的座標
-        let camX = floor(map(px, 0, pg.width, 0, capture.width));
+        // 因為影像會被鏡像翻轉，採樣時需將 X 軸方向反轉，數值才會對應到正確位置
+        let camX = floor(map(px, 0, pg.width, capture.width - 1, 0));
         let camY = floor(map(py, 0, pg.height, 0, capture.height));
         let index = (camX + camY * capture.width) * 4;
 
@@ -54,9 +54,10 @@ function draw() {
   scale(-1, 1);
   // 因為座標系已經翻轉，我們從 (0, 0) 開始繪製影像即可
   image(capture, 0, 0, vWidth, vHeight);
-  // 將 graphics 層疊加在視訊上方
-  image(pg, 0, 0, vWidth, vHeight);
   pop();
+
+  // 將文字繪圖層移到翻轉區塊外，以正常方向顯示在視窗中間 (x, y)
+  image(pg, x, y, vWidth, vHeight);
 }
 
 function windowResized() {
